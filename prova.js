@@ -1,1 +1,1 @@
-alert("L'intervallo deve andare da 1 a 100 coglione!");
+conso
