@@ -1,1 +1,1 @@
-conso
+console.log("gay");
