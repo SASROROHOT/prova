@@ -130,7 +130,9 @@
             font-weight: bold;
             font-size: 24px;
             color: white;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5), 0 0 5px rgba(0,0,0,0.3);
+            /* Aggiunto per migliorare la leggibilità */
+            z-index: 5;
         }
 
         .wheel-segment:nth-child(1) { transform: rotate(0deg); background-color: var(--primary-blue); }
@@ -385,10 +387,12 @@
             let canSpin = true;
             let nextBonusTime = null;
             
-            // Posiziona correttamente i contenuti dei segmenti
+            // Posiziona correttamente i contenuti dei segmenti e verifica
             const segmentContents = document.querySelectorAll('.segment-content');
             segmentContents.forEach((el, index) => {
                 el.textContent = values[index];
+                // Aggiungiamo un attributo data per tracciare il valore del segmento
+                el.closest('.wheel-segment').setAttribute('data-value', values[index]);
             });
             
             // Carica dati salvati
@@ -416,20 +420,25 @@
                 spinBtn.disabled = true;
                 spinBtn.textContent = 'Girando...';
                 
-                // Angolo casuale (minimo 5 giri completi + casuale)
-                const randomDegrees = 1800 + Math.floor(Math.random() * 360);
+                // Almeno 3 giri completi (1080 gradi) + un valore per fermarsi esattamente su un segmento
+                // Calcola un segmento casuale (da 0 a 7)
+                const randomSegment = Math.floor(Math.random() * 8);
+                // Calcola l'angolo esatto per fermarsi su quel segmento (il marker è posizionato in alto)
+                // Ogni segmento occupa 45 gradi (360/8), quindi moltiplichiamo per 45
+                const segmentAngle = randomSegment * 45;
+                // Aggiungiamo 3 giri completi (1080 gradi) + l'angolo del segmento
+                const spinAngle = 1080 + segmentAngle;
                 
-                wheel.style.transform = `rotate(${randomDegrees}deg)`;
+                // Applichiamo la rotazione in senso orario (valore positivo)
+                wheel.style.transform = `rotate(${spinAngle}deg)`;
                 
                 // Dopo che la ruota si è fermata
                 setTimeout(function() {
                     wheel.classList.remove('spinning');
                     
-                    // Calcola quale sezione ha vinto (rispetto alla posizione del marker)
-                    const actualRotation = randomDegrees % 360;
-                    const sectionDegrees = 360 / 8;
-                    const winningSection = 7 - Math.floor((actualRotation % 360) / sectionDegrees);
-                    const winningValue = values[winningSection % 8];
+                    // Il segmento vincente è esattamente quello che abbiamo calcolato
+                    const winningSection = randomSegment;
+                    const winningValue = values[winningSection];
                     
                     // Aggiorna il punteggio
                     totalScore += winningValue;
