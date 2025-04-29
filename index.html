@@ -1,14 +1,585 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
-    <script src="prova.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>WEEL</title>
+    <style>
+        :root {
+            --primary-blue: #1e90ff;
+            --light-blue: #00bfff;
+            --dark-blue: #0000cd;
+            --primary-red: #ff0000;
+            --light-red: #ff4d4d;
+            --dark-red: #b22222;
+            --primary-violet: #8a2be2;
+            --light-violet: #9370db;
+            --dark-violet: #4b0082;
+            --primary-yellow: #ffd700;
+            --light-yellow: #ffff00;
+            --dark-yellow: #daa520;
+            --bg-color: #ff8c00;
+            --light-orange: #ffa500;
+            --dark-orange: #ff4500;
+            --text-color: #000000;
+        }
 
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 800px;
+            padding: 30px;
+            background: linear-gradient(145deg, rgba(255,255,255,0.8), rgba(255,140,0,0.3));
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(255,140,0,0.4);
+            border: 2px solid rgba(255,140,0,0.5);
+        }
+
+        h1 {
+            color: #ff0000;
+            font-size: 52px;
+            margin-bottom: 30px;
+            text-shadow: 4px 4px 6px rgba(0,0,0,0.5),
+                         0 0 15px rgba(255,0,0,0.7),
+                         0 0 25px rgba(255,0,0,0.5);
+            position: relative;
+            display: inline-block;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        h1:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff0000, #ff4d4d);
+            border-radius: 2px;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 40px auto;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-radius: 50%;
+            border: 10px solid #333;
+            box-shadow: 0 0 25px rgba(255,140,0,0.6), 
+                        inset 0 0 15px rgba(0,0,0,0.3);
+            background-color: #444;
+            transition: transform 4s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: rotate(0deg);
+            overflow: hidden;
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #000000, #333333);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 10;
+            border: 5px solid rgba(255,215,0,0.7);
+        }
+
+        .wheel-segment {
+            position: absolute;
+            top: 0;
+            right: 50%;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .segment-content {
+            position: absolute;
+            transform-origin: center right;
+            right: 20px;
+            font-weight: bold;
+            font-size: 24px;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            width: 60px;
+            text-align: center;
+        }
+
+        .wheel-segment:nth-child(1) { transform: rotate(0deg); background-color: var(--primary-blue); }
+        .wheel-segment:nth-child(2) { transform: rotate(45deg); background-color: var(--primary-red); }
+        .wheel-segment:nth-child(3) { transform: rotate(90deg); background-color: var(--primary-violet); }
+        .wheel-segment:nth-child(4) { transform: rotate(135deg); background-color: var(--primary-yellow); }
+        .wheel-segment:nth-child(5) { transform: rotate(180deg); background-color: var(--light-blue); }
+        .wheel-segment:nth-child(6) { transform: rotate(225deg); background-color: var(--light-red); }
+        .wheel-segment:nth-child(7) { transform: rotate(270deg); background-color: var(--light-violet); }
+        .wheel-segment:nth-child(8) { transform: rotate(315deg); background-color: var(--light-yellow); }
+
+        .segment-content:nth-child(1) { transform: rotate(-22.5deg); }
+        .segment-content:nth-child(2) { transform: rotate(-67.5deg); }
+        .segment-content:nth-child(3) { transform: rotate(-112.5deg); }
+        .segment-content:nth-child(4) { transform: rotate(-157.5deg); }
+        .segment-content:nth-child(5) { transform: rotate(-202.5deg); }
+        .segment-content:nth-child(6) { transform: rotate(-247.5deg); }
+        .segment-content:nth-child(7) { transform: rotate(-292.5deg); }
+        .segment-content:nth-child(8) { transform: rotate(-337.5deg); }
+
+        .marker-container {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+        }
+
+        .marker {
+            width: 40px;
+            height: 60px;
+            background-color: #000000;
+            clip-path: polygon(50% 100%, 0 10%, 100% 10%);
+            position: relative;
+        }
+
+        .marker:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background-color: var(--light-orange);
+            border-radius: 50%;
+            border: 3px solid #000000;
+        }
+
+        button {
+            background: linear-gradient(145deg, var(--primary-yellow), var(--dark-yellow));
+            color: black;
+            border: none;
+            padding: 18px 36px;
+            font-size: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 30px 0;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+
+        button:hover:before {
+            left: 100%;
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .score-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(145deg, rgba(255,165,0,0.8), rgba(255,140,0,0.9));
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            color: black;
+        }
+
+        .score-display {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .last-result {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .next-bonus {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .spinning {
+            animation: spin-blur 0.2s linear infinite;
+        }
+
+        @keyframes spin-blur {
+            0% { filter: blur(0px); }
+            50% { filter: blur(2px); }
+            100% { filter: blur(0px); }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent-color);
+            position: absolute;
+            top: -10px;
+            z-index: -1;
+        }
+
+        @keyframes falling {
+            0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(800px) rotate(360deg); opacity: 0; }
+        }
+        
+        @keyframes sideMovement {
+            0% { transform: translateX(-20px); }
+            100% { transform: translateX(20px); }
+        }
+
+        .wheel-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            height: 2px;
+            background-color: rgba(255,255,255,0.3);
+            transform-origin: left center;
+        }
+
+        .line:nth-child(1) { transform: rotate(0deg); }
+        .line:nth-child(2) { transform: rotate(45deg); }
+        .line:nth-child(3) { transform: rotate(90deg); }
+        .line:nth-child(4) { transform: rotate(135deg); }
+        .line:nth-child(5) { transform: rotate(180deg); }
+        .line:nth-child(6) { transform: rotate(225deg); }
+        .line:nth-child(7) { transform: rotate(270deg); }
+        .line:nth-child(8) { transform: rotate(315deg); }
+
+        .win-flash {
+            animation: flash 0.5s ease-in-out 3;
+        }
+
+        @keyframes flash {
+            0%, 100% { box-shadow: 0 0 30px rgba(255,215,0,0.4); }
+            50% { box-shadow: 0 0 60px rgba(255,215,0,0.8); }
+        }
+
+        .cost-info {
+            font-size: 16px;
+            font-style: italic;
+            margin-top: 5px;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <button onclick="gay()">gay</button>
-    <h1 id="ciao"></h1>
+    <div class="container">
+        <h1>WEEL</h1>
+        
+        <div class="wheel-container">
+            <div class="wheel" id="wheel">
+                <div class="wheel-segment"><div class="segment-content">100</div></div>
+                <div class="wheel-segment"><div class="segment-content">50</div></div>
+                <div class="wheel-segment"><div class="segment-content">200</div></div>
+                <div class="wheel-segment"><div class="segment-content">25</div></div>
+                <div class="wheel-segment"><div class="segment-content">75</div></div>
+                <div class="wheel-segment"><div class="segment-content">150</div></div>
+                <div class="wheel-segment"><div class="segment-content">10</div></div>
+                <div class="wheel-segment"><div class="segment-content">500</div></div>
+                
+                <div class="wheel-lines">
+                    <div class="line"></div>
+                    <div class="line"></div>
+                    <div class="line"></div>
+                    <div class="line"></div>
+                    <div class="line"></div>
+                    <div class="line"></div>
+                    <div class="line"></div>
+                    <div class="line"></div>
+                </div>
+                
+                <div class="wheel-center"></div>
+            </div>
+            
+            <div class="marker-container">
+                <div class="marker"></div>
+            </div>
+        </div>
+        
+        <button id="spin-btn">Gira la Ruota</button>
+        <div class="cost-info">Costa 10 punti per girare</div>
+        
+        <div class="score-container">
+            <div class="score-display">Punteggio Totale: <span id="total-score">200</span></div>
+            <div class="last-result" id="last-result">Fai girare la ruota per vincere punti!</div>
+            <div class="next-bonus" id="next-bonus">Prossimo bonus: <span id="bonus-timer">Calcolo in corso...</span></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const wheel = document.getElementById('wheel');
+            const spinBtn = document.getElementById('spin-btn');
+            const totalScoreDisplay = document.getElementById('total-score');
+            const lastResultDisplay = document.getElementById('last-result');
+            const scoreContainer = document.querySelector('.score-container');
+            const bonusTimerDisplay = document.getElementById('bonus-timer');
+            
+            const values = [100, 50, 200, 25, 75, 150, 10, 500];
+            const spinCost = 10;
+            const bonusAmount = 50;
+            const bonusHours = 6;
+            
+            let totalScore = 200; // Punteggio iniziale di 200
+            let canSpin = true;
+            let nextBonusTime = null;
+            
+            // Posiziona correttamente i contenuti dei segmenti
+            const segmentContents = document.querySelectorAll('.segment-content');
+            segmentContents.forEach((el, index) => {
+                el.textContent = values[index];
+            });
+            
+            // Carica dati salvati
+            loadGameData();
+            
+            // Aggiorna il timer di bonus
+            updateBonusTimer();
+            setInterval(updateBonusTimer, 1000);
+            
+            spinBtn.addEventListener('click', function() {
+                if (!canSpin) return;
+                
+                // Controlla se il punteggio è sufficiente
+                if (totalScore < spinCost) {
+                    lastResultDisplay.textContent = `Non hai abbastanza punti per girare! Aspetta il prossimo bonus.`;
+                    return;
+                }
+                
+                // Sottrai il costo per girare
+                totalScore -= spinCost;
+                totalScoreDisplay.textContent = totalScore;
+                
+                canSpin = false;
+                wheel.classList.add('spinning');
+                spinBtn.disabled = true;
+                spinBtn.textContent = 'Girando...';
+                
+                // Angolo casuale (minimo 5 giri completi + casuale)
+                const randomDegrees = 1800 + Math.floor(Math.random() * 360);
+                
+                wheel.style.transform = `rotate(${randomDegrees}deg)`;
+                
+                // Dopo che la ruota si è fermata
+                setTimeout(function() {
+                    wheel.classList.remove('spinning');
+                    
+                    // Calcola quale sezione ha vinto (rispetto alla posizione del marker)
+                    const actualRotation = randomDegrees % 360;
+                    const sectionDegrees = 360 / 8;
+                    const winningSection = 7 - Math.floor((actualRotation % 360) / sectionDegrees);
+                    const winningValue = values[winningSection % 8];
+                    
+                    // Aggiorna il punteggio
+                    totalScore += winningValue;
+                    totalScoreDisplay.textContent = totalScore;
+                    
+                    // Mostra messaggio personalizzato in base al valore vinto
+                    if (winningValue >= 200) {
+                        lastResultDisplay.textContent = `Fantastico! Hai vinto ${winningValue} punti!`;
+                        createConfetti(40);
+                        scoreContainer.classList.add('win-flash');
+                        setTimeout(() => {
+                            scoreContainer.classList.remove('win-flash');
+                        }, 1500);
+                    } else if (winningValue >= 75) {
+                        lastResultDisplay.textContent = `Ottimo! Hai vinto ${winningValue} punti!`;
+                        createConfetti(20);
+                    } else {
+                        lastResultDisplay.textContent = `Hai vinto ${winningValue} punti!`;
+                    }
+                    
+                    spinBtn.disabled = false;
+                    spinBtn.textContent = 'Gira la Ruota';
+                    canSpin = true;
+                    
+                    // Salva i dati del gioco
+                    saveGameData();
+                    
+                }, 4000);
+            });
+            
+            // Funzione per aggiornare il timer del bonus
+            function updateBonusTimer() {
+                const now = new Date().getTime();
+                
+                // Se non esiste ancora un momento per il prossimo bonus o è già passato
+                if (!nextBonusTime || nextBonusTime < now) {
+                    // Se è il primo caricamento o è tempo di dare un bonus
+                    if (nextBonusTime && nextBonusTime < now) {
+                        // Aggiungi il bonus
+                        totalScore += bonusAmount;
+                        totalScoreDisplay.textContent = totalScore;
+                        lastResultDisplay.textContent = `Hai ricevuto un bonus di ${bonusAmount} punti!`;
+                        createConfetti(15);
+                        
+                        // Salva i dati aggiornati
+                        saveGameData();
+                    }
+                    
+                    // Imposta il prossimo momento di bonus
+                    nextBonusTime = now + (bonusHours * 60 * 60 * 1000);
+                    localStorage.setItem('wheelNextBonusTime', nextBonusTime);
+                }
+                
+                // Calcola il tempo rimanente
+                const timeRemaining = nextBonusTime - now;
+                
+                if (timeRemaining > 0) {
+                    // Converti il tempo rimanente in ore, minuti e secondi
+                    const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+                    
+                    // Aggiorna il display del timer
+                    bonusTimerDisplay.textContent = `${hours}h ${minutes}m ${seconds}s`;
+                } else {
+                    bonusTimerDisplay.textContent = "Ora!";
+                }
+            }
+            
+            // Funzione per salvare i dati del gioco
+            function saveGameData() {
+                localStorage.setItem('wheelScore', totalScore);
+                if (nextBonusTime) {
+                    localStorage.setItem('wheelNextBonusTime', nextBonusTime);
+                }
+            }
+            
+            // Funzione per caricare i dati del gioco
+            function loadGameData() {
+                const savedScore = localStorage.getItem('wheelScore');
+                const savedBonusTime = localStorage.getItem('wheelNextBonusTime');
+                
+                if (savedScore) {
+                    totalScore = parseInt(savedScore);
+                    totalScoreDisplay.textContent = totalScore;
+                } else {
+                    // Imposta il punteggio iniziale se non c'è nessun salvataggio
+                    totalScore = 200;
+                    totalScoreDisplay.textContent = totalScore;
+                }
+                
+                if (savedBonusTime) {
+                    nextBonusTime = parseInt(savedBonusTime);
+                }
+            }
+            
+            // Funzione per creare effetto coriandoli
+            function createConfetti(amount) {
+                const container = document.querySelector('.container');
+                const colors = ['#1e90ff', '#ff0000', '#8a2be2', '#ffd700', '#00bfff', '#ff4d4d', '#9370db', '#ffff00'];
+                
+                for (let i = 0; i < amount; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti');
+                    
+                    // Colori casuali
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.backgroundColor = randomColor;
+                    
+                    // Forme casuali - quadrato, cerchio o triangolo
+                    const shapes = ['polygon(50% 0%, 0% 100%, 100% 100%)', 'circle(50% at 50% 50%)', 'none'];
+                    const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+                    if (randomShape !== 'none') {
+                        confetti.style.clipPath = randomShape;
+                    }
+                    
+                    // Dimensioni casuali
+                    const size = Math.random() * 15 + 5;
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+                    
+                    // Posizione iniziale casuale
+                    const startPositionX = Math.random() * container.offsetWidth;
+                    confetti.style.left = `${startPositionX}px`;
+                    
+                    // Animazione
+                    const fallDuration = Math.random() * 3 + 2;
+                    const sideDuration = Math.random() * 2 + 1;
+                    confetti.style.animation = `
+                        falling ${fallDuration}s linear forwards,
+                        sideMovement ${sideDuration}s ease-in-out ${Math.random() * 2}s infinite alternate
+                    `;
+                    
+                    container.appendChild(confetti);
+                    
+                    // Rimuovi i coriandoli dopo l'animazione
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, fallDuration * 1000);
+                }
+            }
+        });
+    </script>
 </body>
 </html>
