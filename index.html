@@ -122,14 +122,15 @@
 
         .segment-content {
             position: absolute;
-            transform-origin: center right;
-            right: 20px;
+            width: 100%;
+            text-align: center;
+            top: 25%;
+            left: -40%;
+            transform: rotate(22.5deg);
             font-weight: bold;
             font-size: 24px;
             color: white;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-            width: 60px;
-            text-align: center;
         }
 
         .wheel-segment:nth-child(1) { transform: rotate(0deg); background-color: var(--primary-blue); }
@@ -140,15 +141,6 @@
         .wheel-segment:nth-child(6) { transform: rotate(225deg); background-color: var(--light-red); }
         .wheel-segment:nth-child(7) { transform: rotate(270deg); background-color: var(--light-violet); }
         .wheel-segment:nth-child(8) { transform: rotate(315deg); background-color: var(--light-yellow); }
-
-        .segment-content:nth-child(1) { transform: rotate(-22.5deg); }
-        .segment-content:nth-child(2) { transform: rotate(-67.5deg); }
-        .segment-content:nth-child(3) { transform: rotate(-112.5deg); }
-        .segment-content:nth-child(4) { transform: rotate(-157.5deg); }
-        .segment-content:nth-child(5) { transform: rotate(-202.5deg); }
-        .segment-content:nth-child(6) { transform: rotate(-247.5deg); }
-        .segment-content:nth-child(7) { transform: rotate(-292.5deg); }
-        .segment-content:nth-child(8) { transform: rotate(-337.5deg); }
 
         .marker-container {
             position: absolute;
